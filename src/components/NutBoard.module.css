@@ -1,0 +1,80 @@
+/* SVG nut board. CSS Module: every class is locally scoped. */
+
+.board {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow-sm);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The board is a dark "screen" in both themes, so the neon colours and the
+   white nut keep their contrast under the light theme too. */
+.neon {
+  background: #14151e;
+}
+
+.glass {
+  background: #0b0b0c;
+}
+
+.nut {
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+
+.hit {
+  cursor: pointer;
+  outline: none;
+}
+
+.hit rect {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 3;
+}
+
+.hit:focus-visible rect {
+  stroke: var(--accent-ring);
+}
+
+.disabled .hit {
+  cursor: default;
+}
+
+.shake {
+  animation: shake 320ms ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nut {
+    transition: none;
+  }
+
+  .shake {
+    animation: none;
+  }
+}

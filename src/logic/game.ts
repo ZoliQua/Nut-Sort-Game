@@ -67,8 +67,9 @@ function revertMove(layout: Layout, [from, to]: Move): Layout {
 function select(state: GameState, bolt: number): GameState {
   if (!Number.isInteger(bolt) || bolt < 0 || bolt >= state.layout.length) return state;
   const { lifted } = state;
-  if (lifted === null) return state.layout[bolt].length > 0 ? { ...state, lifted: bolt } : state;
-  if (lifted === bolt) return { ...state, lifted: null };
+  // A new lift, drop or move ends any shake, so it never replays on the next lift.
+  if (lifted === null) return state.layout[bolt].length > 0 ? { ...state, lifted: bolt, shake: null } : state;
+  if (lifted === bolt) return { ...state, lifted: null, shake: null };
   if (!canMove(state.layout, lifted, bolt)) {
     return { ...state, shake: { bolt, nonce: (state.shake?.nonce ?? 0) + 1 } };
   }
@@ -79,6 +80,7 @@ function select(state: GameState, bolt: number): GameState {
     history: [...state.history, move],
     moves: state.moves + 1,
     lifted: null,
+    shake: null,
   };
   if (!isSolved(next.layout)) return next;
   const level = LEVELS[state.levelIndex];
