@@ -139,6 +139,10 @@ describe('solve', () => {
     }
   }, 60_000);
 
+  it('finds the same optimum without pruning', () => {
+    for (const layout of HAND_MADE) expect(solve(layout, { prune: false })?.length).toBe(solve(layout)?.length);
+  });
+
   it('returns null for an unsolvable layout', () => {
     expect(solve(AD_SHAPE)).toBeNull();
   });

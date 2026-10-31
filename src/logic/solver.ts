@@ -59,14 +59,14 @@ const isSolvedKey = (bolts: readonly string[]): boolean =>
   bolts.every((b) => b.length === 0 || (b.length === CAPACITY && isUniform(b)));
 
 /** Children of a canonical state. Pruned moves never shorten a solution. */
-function children(bolts: readonly string[]): string[] {
+function children(bolts: readonly string[], prune: boolean): string[] {
   const out: string[] = [];
   for (let from = 0; from < bolts.length; from++) {
     const src = bolts[from];
     if (src.length === 0) continue;
     const uniform = isUniform(src);
     // A completed bolt never needs to move again.
-    if (uniform && src.length === CAPACITY) continue;
+    if (prune && uniform && src.length === CAPACITY) continue;
     const nut = src[src.length - 1];
     let triedEmpty = false;
     for (let to = 0; to < bolts.length; to++) {
@@ -74,9 +74,9 @@ function children(bolts: readonly string[]): string[] {
       const dst = bolts[to];
       if (dst.length >= CAPACITY) continue;
       if (dst.length === 0) {
-        // A single-type bolt gains nothing by splitting onto an empty bolt,
-        // and all empty bolts are interchangeable.
-        if (uniform || triedEmpty) continue;
+        // All empty bolts are interchangeable, and a single-type bolt gains
+        // nothing by splitting onto one.
+        if (triedEmpty || (prune && uniform)) continue;
         triedEmpty = true;
       } else if (dst[dst.length - 1] !== nut) {
         continue;
@@ -151,6 +151,8 @@ export type SolveOptions = {
   maxExpanded?: number;
   /** Receives the number of expanded states when the search ends. */
   onStats?: (stats: { expanded: number }) => void;
+  /** Skip moves that never shorten a solution (default true). `verify:levels` turns it off. */
+  prune?: boolean;
 };
 
 /**
@@ -159,6 +161,7 @@ export type SolveOptions = {
  */
 export function solve(layout: Layout, opts: SolveOptions = {}): Move[] | null {
   const maxExpanded = opts.maxExpanded ?? Infinity;
+  const prune = opts.prune ?? true;
   const startKey = canonicalKey(layout);
   const best = new Map<string, number>([[startKey, 0]]);
   const parent = new Map<string, string>();
@@ -176,7 +179,7 @@ export function solve(layout: Layout, opts: SolveOptions = {}): Move[] | null {
       break;
     }
     if (++expanded > maxExpanded) break;
-    for (const child of children(bolts)) {
+    for (const child of children(bolts, prune)) {
       const known = best.get(child);
       if (known !== undefined && known <= g + 1) continue;
       best.set(child, g + 1);
