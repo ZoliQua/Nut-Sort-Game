@@ -1,0 +1,64 @@
+.game {
+  max-width: 1080px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 300px);
+  gap: 18px;
+  align-items: start;
+  justify-content: center;
+}
+
+.boardWrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.buttons + .buttons {
+  margin-top: 8px;
+}
+
+.buttons > * {
+  flex: 1;
+}
+
+.save {
+  margin-top: 10px;
+  min-height: 16px;
+}
+
+.settings {
+  display: grid;
+  gap: 12px;
+}
+
+.settings :global(.arc-field) {
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-mute);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

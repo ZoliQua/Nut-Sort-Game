@@ -13,7 +13,16 @@ export type NutSortKeyOptions = {
   onRestart(): void;
   /** `Esc`. */
   onCancel(): void;
+  /** Enter / Space (left to a focused button): start, resume, next level, play again. */
+  onPrimary?(): void;
+  /** `P`, and `Esc` while the bolt keys are off. */
+  onTogglePause?(): void;
+  /** A confirm dialog is open: only Enter (confirm) and Esc (dismiss) are live. */
+  dialog?: { onConfirm(): void; onDismiss(): void } | null;
 };
+
+const isButtonTarget = (target: EventTarget | null): boolean =>
+  target instanceof Element && (target.tagName === 'BUTTON' || target.getAttribute('role') === 'button');
 
 /** Ctrl/Cmd+Z is the one modifier combo the game answers to; Shift and Alt variants stay with the browser. */
 const isUndoChord = (e: KeyboardEvent): boolean =>
@@ -25,8 +34,8 @@ const withoutModifiers = (e: KeyboardEvent): KeyboardEvent =>
 
 /**
  * One window `keydown` listener for the component's lifetime; options are read
- * from a ref, so they are never stale and never re-attached. `T` (theme) and
- * `P` (pause) are left to the shell and the game.
+ * from a ref, so they are never stale and never re-attached. `T` is left to
+ * the shell (theme toggle).
  */
 export function useNutSortKeys(opts: NutSortKeyOptions): void {
   const ref = useRef(opts);
@@ -36,14 +45,37 @@ export function useNutSortKeys(opts: NutSortKeyOptions): void {
     const onKey = (event: KeyboardEvent) => {
       if (shouldIgnoreKey(event)) {
         if (!isUndoChord(event) || shouldIgnoreKey(withoutModifiers(event))) return;
-        if (!ref.current.enabled) return;
+        if (!ref.current.enabled || ref.current.dialog) return;
         event.preventDefault();
         ref.current.onUndo();
         return;
       }
       const o = ref.current;
-      if (!o.enabled) return;
       const key = event.key;
+      if (o.dialog) {
+        if (key === 'Enter') {
+          event.preventDefault();
+          o.dialog.onConfirm();
+        } else if (key === 'Escape') {
+          event.preventDefault();
+          o.dialog.onDismiss();
+        }
+        return;
+      }
+      if (key === 'Enter' || key === ' ') {
+        // A focused button (a bolt, Undo, an overlay action) activates itself natively.
+        if (!o.onPrimary || isButtonTarget(event.target)) return;
+        event.preventDefault();
+        o.onPrimary();
+        return;
+      }
+      if (key === 'p' || key === 'P' || (key === 'Escape' && !o.enabled)) {
+        if (!o.onTogglePause) return;
+        event.preventDefault();
+        o.onTogglePause();
+        return;
+      }
+      if (!o.enabled) return;
       if (key.length === 1 && key >= '0' && key <= '9') {
         const bolt = key === '0' ? 9 : Number(key) - 1;
         if (bolt >= o.bolts) return;
