@@ -3,7 +3,7 @@
 A type-safe Nut Sort puzzle built with **React 18**, **Vite** and **TypeScript** — sort coloured nuts onto bolts in as few moves
 as you can. Every nut kind is told apart by its **width and the notches on its top edge**, so the game is fully playable
 without colour. **20 fixed levels**, the same for every player, each with a **proven minimum (par)** found by an exact A\* solver.
-Runs on its own **and** as one of the ten games of **[Zoltan's Arcade](https://github.com/ZoliQua/Arcade-Game-Center)** —
+Runs on its own **and** as one of the eleven games of **[Zoltan's Arcade](https://github.com/ZoliQua/Arcade-Game-Center)** —
 play it at [drdul.hu/arcade/#/play/nutsort](https://drdul.hu/arcade/#/play/nutsort).
 
 [![CI](https://github.com/ZoliQua/Nut-Sort-Game/actions/workflows/ci.yml/badge.svg)](https://github.com/ZoliQua/Nut-Sort-Game/actions/workflows/ci.yml)
@@ -49,6 +49,7 @@ Every game is a standalone repo that also plugs into the portal. They share one 
 | 👾 Space Invaders | [Space-Invaders-Game](https://github.com/ZoliQua/Space-Invaders-Game) | Shooter |
 | 🔴 Connect Four | [Connect-Four-Game](https://github.com/ZoliQua/Connect-Four-Game) | Duel |
 | 🔩 **Nut Sort** (this repo) | [Nut-Sort-Game](https://github.com/ZoliQua/Nut-Sort-Game) | Sorting |
+| 🃏 Texas Hold'em | [Texas-Holdem-Game](https://github.com/ZoliQua/Texas-Holdem-Game) | Cards |
 
 ## ✨ Features
 
