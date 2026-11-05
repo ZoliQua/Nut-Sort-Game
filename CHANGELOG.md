@@ -6,14 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-## [1.0.1] - 2026-12-06
+## [1.0.1] - 2026-11-04
 
 ### Changed
 
 - Vendored kit (`src/arcade/`) updated: the registry knows the eleventh arcade game, Texas Hold'em, with its accent colour.
 - README: the Zoltan's Arcade family table lists all eleven games.
 
-## [1.0.0] - 2026-11-21
+## [1.0.0] - 2026-11-01
 
 ### Added
 - Nut Sort rules: bolts of capacity 4, one nut per move onto a same-kind top or an empty bolt; solved when every non-empty bolt
