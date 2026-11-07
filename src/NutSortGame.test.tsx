@@ -156,7 +156,7 @@ describe('<NutSortGame />', () => {
       if (i < LEVEL_COUNT - 1) key('Enter');
     }
     wait(RESULT_DELAY_MS);
-    expect(screen.getByRole('dialog', { name: 'All 20 levels solved!' }).textContent).toMatch(/Final score 10800 of 10800/);
+    expect(screen.getByRole('dialog', { name: 'All 20 levels solved!' }).textContent).toMatch(/Final score 10,800 of 10,800/);
     wait(5000);
     expect(onGameOver).toHaveBeenCalledTimes(1);
     expect(onGameOver).toHaveBeenCalledWith(10800);

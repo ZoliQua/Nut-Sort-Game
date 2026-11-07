@@ -13,7 +13,7 @@ export const NUT_TYPES: readonly { color: string; name: string; width: number; n
   { color: '#cc79a7', name: 'reddish purple', width: 84 / 116, notches: 4 },
   { color: '#e8eaf2', name: 'white', width: 92 / 116, notches: 1 },
   { color: '#f0e442', name: 'yellow', width: 100 / 116, notches: 3 },
-  { color: '#d55e00', name: 'vermillion', width: 108 / 116, notches: 2 },
+  { color: '#d55e00', name: 'vermilion', width: 108 / 116, notches: 2 },
   { color: '#56b4e9', name: 'sky blue', width: 116 / 116, notches: 4 },
 ];
 

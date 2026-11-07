@@ -1,4 +1,6 @@
 import { useId, useState, type KeyboardEvent } from 'react';
+import { useMessages } from '../arcade';
+import { MESSAGES, type MessageKey } from '../i18n';
 import { CAPACITY, NUT_TYPES } from '../logic/constants';
 import type { Layout } from '../logic/types';
 import type { Look } from '../hooks/useLook';
@@ -88,13 +90,18 @@ function carryIds(prev: NutIds, layout: Layout): NutIds {
   return { layout, ids, next: prev.next };
 }
 
-function boltLabel(layout: Layout, b: number, lifted: number | null): string {
+type T = (key: MessageKey, vars?: Record<string, string | number>) => string;
+
+function boltLabel(layout: Layout, b: number, lifted: number | null, t: T): string {
   const bolt = layout[b];
-  if (bolt.length === 0) return `Bolt ${b + 1}: empty`;
-  const top = NUT_TYPES[bolt[bolt.length - 1]];
-  const type = bolt[bolt.length - 1] + 1;
-  const count = bolt.length === 1 ? '1 nut' : `${bolt.length} nuts`;
-  return `Bolt ${b + 1}: ${count}, top type ${type} (${top.name}, ${top.notches} notches)${lifted === b ? ', lifted' : ''}`;
+  if (bolt.length === 0) return t('boltEmpty', { n: b + 1 });
+  const typeIndex = bolt[bolt.length - 1];
+  const top = NUT_TYPES[typeIndex];
+  const count = t(bolt.length === 1 ? 'nutsOne' : 'nutsMany', { n: bolt.length });
+  const notches = t(top.notches === 1 ? 'notchesOne' : 'notchesMany', { n: top.notches });
+  const name = t(`nut${typeIndex}` as MessageKey);
+  const label = t('boltNuts', { n: b + 1, count, type: typeIndex + 1, name, notches });
+  return lifted === b ? label + t('boltLifted') : label;
 }
 
 export type NutBoardProps = {
@@ -107,6 +114,7 @@ export type NutBoardProps = {
 };
 
 export function NutBoard({ layout, lifted, shake, look, disabled = false, onSelectBolt }: NutBoardProps) {
+  const t = useMessages(MESSAGES);
   const id = `nb${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const [nutIds, setNutIds] = useState<NutIds>(() => freshIds(layout, 0));
   let current = nutIds;
@@ -165,7 +173,7 @@ export function NutBoard({ layout, lifted, shake, look, disabled = false, onSele
       className={`${styles.board} ${glass ? styles.glass : styles.neon} ${disabled ? styles.disabled : ''}`}
       viewBox={`0 0 ${g.width} ${g.height}`}
       role="group"
-      aria-label={`Nut board, ${bolts} bolts`}
+      aria-label={t('boardLabel', { n: bolts })}
     >
       <defs>
         <filter id={`${id}-glow`} x="-30%" y="-60%" width="160%" height="220%">
@@ -247,7 +255,7 @@ export function NutBoard({ layout, lifted, shake, look, disabled = false, onSele
             key={b}
             role="button"
             tabIndex={disabled ? -1 : 0}
-            aria-label={boltLabel(layout, b, lifted)}
+            aria-label={boltLabel(layout, b, lifted, t)}
             aria-disabled={disabled || undefined}
             aria-pressed={lifted === b}
             className={styles.hit}

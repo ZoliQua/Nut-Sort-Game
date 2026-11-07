@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Hungarian and German: every game string (overlays, level and scoring texts, the Neon / Glass look, bolt labels for screen readers) follows the shared arcade language (`src/i18n.ts`).
+
 ## [1.0.1] - 2026-11-04
 
 ### Changed

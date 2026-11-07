@@ -2,6 +2,8 @@ import { useCallback, useEffect, useReducer, useRef, useState, type CSSPropertie
 import {
   clearSession,
   formatClock,
+  formatNumber,
+  gameName,
   GameOverlay,
   KeyHelp,
   SaveBadge,
@@ -9,6 +11,9 @@ import {
   useArcadeRun,
   useRestoredSession,
   useRunTimer,
+  useKitMessages,
+  useLang,
+  useMessages,
   useSessionAutosave,
   type ArcadeGameProps,
   type ArcadeStatus,
@@ -24,6 +29,7 @@ import { LEVELS } from './logic/levels';
 import { isNutSortSession, type SavedGame } from './logic/persist';
 import { canMove } from './logic/rules';
 import { maxLevelScore, restartCap } from './logic/scoring';
+import { MESSAGES, type MessageKey } from './i18n';
 import styles from './App.module.css';
 
 /** Bump when SavedGame changes shape; older saves are then discarded. */
@@ -43,17 +49,20 @@ type Phase = 'idle' | 'live' | 'paused';
 
 type Confirm = 'restart' | 'newGame' | null;
 
-const KEYS: [string, string][] = [
-  ['1–9 0', 'Select bolt 1–10 (lift / drop)'],
-  ['Esc', 'Put a lifted nut back'],
-  ['U Ctrl+Z', 'Undo (+1 move)'],
-  ['R', 'Restart level (lowers its score)'],
-  ['Enter Space', 'Start · next level'],
-  ['P', 'Pause / resume'],
+const KEYS: [string, MessageKey][] = [
+  ['1–9 0', 'keySelect'],
+  ['Esc', 'keyPutBack'],
+  ['U Ctrl+Z', 'keyUndo'],
+  ['R', 'keyRestart'],
+  ['Enter Space', 'keyStart'],
+  ['P', 'keyPause'],
 ];
 
 export function NutSortGame(props: ArcadeGameProps = {}) {
   const { embedded = false } = props;
+  const t = useMessages(MESSAGES);
+  const k = useKitMessages();
+  const [lang] = useLang();
   const restored = useRestoredSession<SavedGame>('nutsort', SESSION_SCHEMA, isNutSortSession);
   // A finished run is already recorded: it is never restored (and its save is discarded in idle).
   const resumable = restored !== null && restored.data.phase !== 'finished' ? restored : null;
@@ -233,68 +242,75 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
   const best = Math.max(stats.best, finished ? score : 0);
   const newBest = finished && score > stats.bestBeforeRun;
   const lastScore = state.levelScores[state.levelIndex] ?? 0;
+  const num = (n: number) => formatNumber(n, lang);
+  const restartsText = t(state.restarts === 1 ? 'restartsOne' : 'restartsMany', { n: state.restarts });
+  const keyRows = KEYS.map(([keys, action]): [string, string] => [keys, t(action)]);
 
   let statusLabel: string | undefined;
   if (running && state.phase === 'playing') {
-    statusLabel = state.lifted !== null ? `Nut lifted from bolt ${state.lifted + 1}` : 'Pick a bolt';
+    statusLabel = state.lifted !== null ? t('liftedFrom', { n: state.lifted + 1 }) : t('pickBolt');
   } else if (running) {
-    statusLabel = 'Level solved';
+    statusLabel = t('levelSolvedStatus');
   }
 
   let overlay: { title: string; message: string; actions: OverlayAction[] } | null = null;
   if (confirm === 'restart') {
     overlay = {
-      title: 'Restart this level?',
-      message: `The layout resets and this level can then pay at most ${Math.round(restartCap(state.restarts + 1) * 100)} % of its points.`,
+      title: t('restartTitle'),
+      message: t('restartBody', { pct: Math.round(restartCap(state.restarts + 1) * 100) }),
       actions: [
-        { label: 'Restart', onClick: confirmDialog, primary: true, kbd: 'Enter' },
-        { label: 'Keep playing', onClick: dismissDialog, kbd: 'Esc' },
+        { label: t('restartConfirm'), onClick: confirmDialog, primary: true, kbd: 'Enter' },
+        { label: t('keepPlaying'), onClick: dismissDialog, kbd: 'Esc' },
       ],
     };
   } else if (confirm === 'newGame') {
     overlay = {
-      title: 'Start a new game?',
-      message: 'This run ends without being recorded and you start again at level 1.',
+      title: t('newGameTitle'),
+      message: t('newGameBody'),
       actions: [
-        { label: 'New game', onClick: confirmDialog, primary: true, kbd: 'Enter' },
-        { label: 'Keep playing', onClick: dismissDialog, kbd: 'Esc' },
+        { label: t('newGame'), onClick: confirmDialog, primary: true, kbd: 'Enter' },
+        { label: t('keepPlaying'), onClick: dismissDialog, kbd: 'Esc' },
       ],
     };
   } else if (status === 'idle') {
     overlay = {
-      title: 'Nut Sort',
-      message:
-        'Sort the nuts so each bolt holds four of one kind. Every kind has its own width and notch count. Fewer moves score more; 20 levels.',
-      actions: [{ label: 'Start', onClick: start, primary: true, kbd: 'Space' }],
+      title: gameName('nutsort', lang),
+      message: t('idleBody'),
+      actions: [{ label: k('start'), onClick: start, primary: true, kbd: 'Space' }],
     };
   } else if (status === 'paused') {
     overlay = welcomeBack
       ? {
-          title: 'Welcome back',
-          message: `Your run was restored — level ${state.levelIndex + 1} of ${LEVEL_COUNT}, ${score} points so far.`,
+          title: k('welcomeBack'),
+          message: t('welcomeBody', { level: state.levelIndex + 1, count: LEVEL_COUNT, score: num(score) }),
           actions: [
-            { label: 'Continue', onClick: togglePause, primary: true, kbd: 'P' },
-            { label: 'New game', onClick: playAgain },
+            { label: t('continue'), onClick: togglePause, primary: true, kbd: 'P' },
+            { label: t('newGame'), onClick: playAgain },
           ],
         }
       : {
-          title: 'Paused',
-          message: 'Your run is autosaved — you can close the tab and continue later.',
-          actions: [{ label: 'Resume', onClick: togglePause, primary: true, kbd: 'P' }],
+          title: k('paused'),
+          message: t('pausedBody'),
+          actions: [{ label: k('resume'), onClick: togglePause, primary: true, kbd: 'P' }],
         };
   } else if (status === 'gameOver' && showResult) {
     overlay = {
-      title: `All ${LEVEL_COUNT} levels solved!`,
-      message: `Final score ${score} of ${RUN_MAX} · Best ${best}${newBest ? ' — new best!' : ''}`,
-      actions: [{ label: 'Play again', onClick: playAgain, primary: true, kbd: 'Enter' }],
+      title: t('allSolvedTitle', { count: LEVEL_COUNT }),
+      message: t('finalScore', { score: num(score), max: num(RUN_MAX), best: num(best) }) + (newBest ? t('newBestSuffix') : ''),
+      actions: [{ label: t('playAgain'), onClick: playAgain, primary: true, kbd: 'Enter' }],
     };
   } else if (state.phase === 'levelComplete' && showResult) {
     overlay = {
-      title: `Level ${state.levelIndex + 1} solved`,
-      message:
-        `+${lastScore} of ${maxLevelScore(level.types)} points · par ${level.par}, ${state.moves} moves, ` +
-        `${state.restarts} ${state.restarts === 1 ? 'restart' : 'restarts'} · Run ${score}`,
-      actions: [{ label: 'Next level', onClick: nextLevel, primary: true, kbd: 'Enter' }],
+      title: t('levelSolvedTitle', { n: state.levelIndex + 1 }),
+      message: t('levelSolvedBody', {
+        gained: num(lastScore),
+        max: num(maxLevelScore(level.types)),
+        par: level.par,
+        moves: state.moves,
+        restarts: restartsText,
+        score: num(score),
+      }),
+      actions: [{ label: t('nextLevel'), onClick: nextLevel, primary: true, kbd: 'Enter' }],
     };
   }
 
@@ -303,8 +319,8 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
       {!embedded && (
         <header className="arc-game__head">
           <div>
-            <h1 className="arc-game__title">Nut Sort</h1>
-            <p className="arc-game__sub">Sort the nuts onto bolts in as few moves as you can — shaped for colour-blind players.</p>
+            <h1 className="arc-game__title">{gameName('nutsort', lang)}</h1>
+            <p className="arc-game__sub">{t('subtitle')}</p>
           </div>
         </header>
       )}
@@ -313,10 +329,10 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
         status={status}
         statusLabel={statusLabel}
         items={[
-          { label: 'Level', value: `${state.levelIndex + 1}/${LEVEL_COUNT}` },
-          { label: 'Moves', value: `${state.moves} / ${level.par}` },
-          { label: 'Score', value: score },
-          { label: 'Time', value: formatClock(seconds) },
+          { label: k('level'), value: `${state.levelIndex + 1}/${LEVEL_COUNT}` },
+          { label: k('moves'), value: `${state.moves} / ${level.par}` },
+          { label: k('score'), value: num(score) },
+          { label: k('time'), value: formatClock(seconds) },
         ]}
       />
 
@@ -335,30 +351,41 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
 
         <aside className={styles.side}>
           <section className="arc-panel">
-            <h2 className="arc-panel__title">Game</h2>
+            <h2 className="arc-panel__title">{t('panelGame')}</h2>
             <div className={styles.buttons}>
               <button
                 type="button"
                 className="arc-btn arc-btn--primary"
                 onClick={status === 'running' || status === 'paused' ? togglePause : primary}
               >
-                {status === 'running' ? 'Pause' : status === 'paused' ? 'Resume' : status === 'idle' ? 'Start' : 'Play again'}
+                {status === 'running'
+                  ? k('pause')
+                  : status === 'paused'
+                    ? k('resume')
+                    : status === 'idle'
+                      ? k('start')
+                      : t('playAgain')}
               </button>
               <button type="button" className="arc-btn" onClick={requestNewGame} disabled={status === 'idle'}>
-                New game
+                {t('newGame')}
               </button>
             </div>
             <div className={styles.buttons}>
               <button type="button" className="arc-btn" onClick={undo} disabled={!interactive || state.history.length === 0}>
-                Undo <kbd className="arc-kbd">U</kbd>
+                {t('undo')} <kbd className="arc-kbd">U</kbd>
               </button>
               <button type="button" className="arc-btn" onClick={requestRestart} disabled={!interactive || state.moves === 0}>
-                Restart <kbd className="arc-kbd">R</kbd>
+                {t('restart')} <kbd className="arc-kbd">R</kbd>
               </button>
             </div>
             <p className={styles.note}>
-              Level {state.levelIndex + 1}: par {level.par} · worth up to {Math.round(maxLevelScore(level.types) * restartCap(state.restarts))}
-              {state.restarts > 0 ? ` (${state.restarts} ${state.restarts === 1 ? 'restart' : 'restarts'})` : ''}. Undo adds a move.
+              {t('levelNote', {
+                n: state.levelIndex + 1,
+                par: level.par,
+                worth: num(Math.round(maxLevelScore(level.types) * restartCap(state.restarts))),
+              })}
+              {state.restarts > 0 ? t('levelNoteRestarts', { restarts: restartsText }) : ''}
+              {t('undoNote')}
             </p>
             <div className={styles.save}>
               <SaveBadge savedAt={phase !== 'idle' ? savedAt : null} onDiscard={discardSave} />
@@ -366,15 +393,15 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
           </section>
 
           <section className="arc-panel">
-            <h2 className="arc-panel__title">Settings</h2>
+            <h2 className="arc-panel__title">{t('panelSettings')}</h2>
             <div className={styles.settings}>
               <LookToggle look={look} onChange={setLook} />
             </div>
           </section>
 
           <section className="arc-panel">
-            <h2 className="arc-panel__title">Keys</h2>
-            <KeyHelp rows={KEYS} />
+            <h2 className="arc-panel__title">{t('panelKeys')}</h2>
+            <KeyHelp rows={keyRows} />
           </section>
         </aside>
       </div>
