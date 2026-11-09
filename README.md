@@ -4,7 +4,7 @@ A type-safe Nut Sort puzzle built with **React 18**, **Vite** and **TypeScript**
 as you can. Every nut kind is told apart by its **width and the notches on its top edge**, so the game is fully playable
 without colour. **20 fixed levels**, the same for every player, each with a **proven minimum (par)** found by an exact A\* solver.
 Runs on its own **and** as one of the eleven games of **[Zoltan's Arcade](https://github.com/ZoliQua/Arcade-Game-Center)** —
-play it at [drdul.hu/arcade/#/play/nutsort](https://drdul.hu/arcade/#/play/nutsort).
+play it at [dulzoltan.hu/arcade/#/play/nutsort](https://dulzoltan.hu/arcade/#/play/nutsort).
 
 [![CI](https://github.com/ZoliQua/Nut-Sort-Game/actions/workflows/ci.yml/badge.svg)](https://github.com/ZoliQua/Nut-Sort-Game/actions/workflows/ci.yml)
 ![license](https://img.shields.io/badge/license-MIT-green)
@@ -63,6 +63,8 @@ Every game is a standalone repo that also plugs into the portal. They share one 
 - ⏸️ **Pause** (P, or automatically when the tab is hidden) — freezes the board and the timer
 - 💾 **Autosave & resume** — the whole run survives reloads and tab closes
 - 🌗 **Dark / light theme** shared with every arcade game (press **T**)
+- 🌍 **Three languages** — English, Hungarian and German; switch in the top bar or in the settings (also `?lang=en|hu|de` for link hand-off); numbers follow the locale's grouping
+- 🦷 **Dental mode** — a „Fogas mód” / "Dental mode" / „Zahnmodus” toggle in the settings, off by default (or `?dental=1`), shared across the whole arcade: the bolts are implant posts and the nuts are crowns; the width and notch coding is unchanged; presentation only
 - 🤖 **Attract-mode demo** (`<NutSortDemo />`) — replays the optimal solutions of levels 1–5
 - 📱 **Phone-friendly** — 7–10 bolts split into two rows, so a 360 px screen has no horizontal scroll and the notches stay visible
 - ⌨️ **Keyboard-first and accessible** — every bolt is a focusable button labelled with its contents

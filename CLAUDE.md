@@ -4,7 +4,7 @@
 
 * **Repository**: https://github.com/ZoliQua/Nut-Sort-Game (package `nut-sort-game`)
 * **Portal**: https://github.com/ZoliQua/Arcade-Game-Center — arcade id **`nutsort`**, colour token `--game-nutsort`,
-  play URL https://drdul.hu/arcade/#/play/nutsort. The same `src/` is mirrored into `Arcade-Game-Center/apps/nutsort/`.
+  play URL https://dulzoltan.hu/arcade/#/play/nutsort. The same `src/` is mirrored into `Arcade-Game-Center/apps/nutsort/`.
 * **Sister games**: Tetris, Snake (the reference implementation), 2048, Pac-Man, Gomoku, Tic-Tac-Toe, Breakout,
   Space Invaders, Connect Four. Connect Four is the closest template (reducer + session guard that replays history).
 * **Stack**: React 18.3, Vite 5.4, TypeScript 5.6, CSS Modules on the shared arcade tokens. No other runtime dependencies.
