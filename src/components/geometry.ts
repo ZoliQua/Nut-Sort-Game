@@ -16,3 +16,27 @@ export function notchCentres(cx: number, width: number, count: number): number[]
   const start = cx - (gap * (count - 1)) / 2;
   return Array.from({ length: count }, (_, i) => start + i * gap);
 }
+
+/**
+ * Dental-mode crown outline (absolute M/L/Q/C commands only): a flat occlusal
+ * top that carries the notches, sides that bulge and then taper to the
+ * cervical margin. Its widest point is exactly `w`, so a crown is as wide as
+ * the nut it replaces and the width cue survives the re-skin.
+ */
+export function crownPath(cx: number, y: number, w: number, h: number): string {
+  const x0 = cx - w / 2;
+  const x1 = cx + w / 2;
+  const r = Math.min(9, h * 0.28);
+  const f = (n: number) => Number(n.toFixed(2));
+  const pts: (string | number)[] = [
+    'M', x0 + r, y,
+    'L', x1 - r, y,
+    'Q', x1, y, x1, y + r,
+    'C', x1, y + h * 0.62, x1 - w * 0.04, y + h * 0.9, x1 - w * 0.11, y + h,
+    'L', x0 + w * 0.11, y + h,
+    'C', x0 + w * 0.04, y + h * 0.9, x0, y + h * 0.62, x0, y + r,
+    'Q', x0, y, x0 + r, y,
+    'Z',
+  ];
+  return pts.map((p) => (typeof p === 'number' ? f(p) : p)).join(' ');
+}

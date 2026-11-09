@@ -19,6 +19,7 @@ import {
   type ArcadeStatus,
   type OverlayAction,
 } from './arcade';
+import { DentalToggle } from './components/DentalToggle';
 import { LookToggle } from './components/LookToggle';
 import { MOVE_MS, NutBoard } from './components/NutBoard';
 import { useLook } from './hooks/useLook';
@@ -396,6 +397,7 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
             <h2 className="arc-panel__title">{t('panelSettings')}</h2>
             <div className={styles.settings}>
               <LookToggle look={look} onChange={setLook} />
+              <DentalToggle className={styles.dentalRow} />
             </div>
           </section>
 

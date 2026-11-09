@@ -9,6 +9,7 @@ All notable changes to this project are documented here. The format follows
 ### Added
 
 - Hungarian and German: every game string (overlays, level and scoring texts, the Neon / Glass look, bolt labels for screen readers) follows the shared arcade language (`src/i18n.ts`).
+- Dental mode (shared `arcade.dental`, off by default; toggle in the arcade top bar and in Settings): bolts become titanium implant posts set in the gum, nuts become crowns. A crown keeps its nut's exact width and notches, so the colour-free type code reads the same; works in both the Neon and Glass looks. Rules, scores and saves are unchanged.
 
 ## [1.0.1] - 2026-11-04
 

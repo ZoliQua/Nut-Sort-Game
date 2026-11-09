@@ -1,7 +1,7 @@
 import { NUT_TYPES } from '../logic/constants';
 import type { NutType } from '../logic/types';
 import type { Look } from '../hooks/useLook';
-import { notchCentres, shade } from './geometry';
+import { crownPath, notchCentres, shade } from './geometry';
 
 /** Notch width in viewBox units; never below `MIN_NOTCH_PX` (see NutBoard). */
 export const NOTCH_W = 8;
@@ -11,6 +11,8 @@ const NOTCH_DEPTH = 0.4;
 export type NutProps = {
   type: NutType;
   look: Look;
+  /** Dental mode: the nut is drawn as a crown (same width and notches). */
+  dental?: boolean;
   /** Horizontal centre and top edge, in viewBox units. */
   cx: number;
   y: number;
@@ -27,7 +29,7 @@ export type NutProps = {
  * One nut: its width and the notches on its top edge identify the type without
  * colour; the colour is a bonus.
  */
-export function Nut({ type, look, cx, y, maxWidth, height, defsId = 'nut', notchFill = '#14151e' }: NutProps) {
+export function Nut({ type, look, dental = false, cx, y, maxWidth, height, defsId = 'nut', notchFill = '#14151e' }: NutProps) {
   const spec = NUT_TYPES[type];
   const w = spec.width * maxWidth;
   const x = cx - w / 2;
@@ -43,6 +45,31 @@ export function Nut({ type, look, cx, y, maxWidth, height, defsId = 'nut', notch
       fill={notchFill}
     />
   ));
+
+  if (dental) {
+    const d = crownPath(cx, y, w, height);
+    // Enamel shine on the left shoulder and the cervical margin near the base.
+    const shine = `M${cx - w * 0.36} ${y + height * 0.3} Q${cx - w * 0.38} ${y + height * 0.62} ${cx - w * 0.28} ${y + height * 0.8}`;
+    const margin = `M${cx - w * 0.43} ${y + height * 0.8} Q${cx} ${y + height * 0.9} ${cx + w * 0.43} ${y + height * 0.8}`;
+    if (look === 'glass') {
+      return (
+        <g opacity={0.96}>
+          <path data-testid="nut-crown" d={d} fill={`url(#${defsId}-g${type})`} stroke="rgba(255,255,255,.55)" strokeWidth={1.5} />
+          <path d={shine} fill="none" stroke="rgba(255,255,255,.75)" strokeWidth={4} strokeLinecap="round" />
+          <path d={margin} fill="none" stroke="rgba(0,0,0,.35)" strokeWidth={1.6} />
+          {notches}
+        </g>
+      );
+    }
+    return (
+      <g filter={`url(#${defsId}-glow)`}>
+        <path data-testid="nut-crown" d={d} fill={shade(spec.color, -0.72)} fillOpacity={0.9} stroke={spec.color} strokeWidth={2} />
+        <path d={shine} fill="none" stroke={spec.color} strokeOpacity={0.75} strokeWidth={3} strokeLinecap="round" />
+        <path d={margin} fill="none" stroke={spec.color} strokeOpacity={0.5} strokeWidth={1.4} />
+        {notches}
+      </g>
+    );
+  }
 
   if (look === 'glass') {
     const sparkles = [
