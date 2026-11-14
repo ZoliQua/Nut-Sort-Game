@@ -128,16 +128,16 @@ A level with *k* kinds uses kinds 1…*k*. Width, notches and rules are identica
 
 ### On a phone
 
-Tap the bolt you want to move from (its top nut lifts), then tap the bolt you want to move to. Tap the lifted bolt again to put the nut back. Every bolt is a tap area at least 44 px wide, and Undo, Restart, Pause, Rules, Finish and Full screen are 44 px buttons below the board. **Finish** ends the run early and ranks the levels solved so far; **Rules** opens the rules with a move diagram (it pauses the run). On an iPhone, *Share → Add to Home Screen* removes the browser bars.
+Tap the bolt you want to move from (its top nut lifts), then tap the bolt you want to move to. Tap the lifted bolt again to put the nut back. Every bolt is a tap area at least 44 px wide, and Undo, Restart, Pause, Rules, Finish and Full screen are 44 px buttons below the board. **Finish** ends the run early and ranks only the levels already solved (the level in progress does not count; a note next to the button says so); **Rules** opens the rules with a move diagram (it pauses the run). On an iPhone, *Share → Add to Home Screen* removes the browser bars.
 
 ### Keyboard
 
 | Key | Action |
 | --- | --- |
 | 🖱️ Click / tap a bolt | Lift its top nut; click another bolt to drop it there, or the same bolt to put it back |
-| **1** – **9**, **0** | Select bolt 1–10 |
+| **1** – **9**, **0** | Select a bolt (1–10: the most bolts any level has; **0** is bolt 10) |
 | **Esc** | Put a lifted nut back (pauses when nothing is lifted) |
-| **U** / **Ctrl+Z** / **Cmd+Z** | Undo the last move (+1 move) |
+| **U** / **Ctrl+Z** / **Cmd+Z** | Undo the last move (adds `UNDO_COST` = 1 to the move counter) |
 | **R** | Restart the level (asks first — **Enter** confirms, **Esc** keeps) |
 | **Enter** / **Space** | Start · resume · next level · play again |
 | **P** | Pause / resume |
@@ -157,7 +157,7 @@ restartCap  = max(0.2, 1 − 0.2 × restarts)     // 1st restart → 80 %, 2nd �
 levelScore  = round(base × efficiency × restartCap)
 ```
 
-- **Undo** reverts the last move but adds **+1** to the move counter, so a wrong move that is undone costs 2 moves.
+- **Undo** reverts the last move but adds **`UNDO_COST` = 1** to the move counter, so a wrong move that is undone costs 2 moves.
   It is unlimited and works back to the level's start (or the last restart).
 - **Restart** resets the layout and the move counter and lowers `restartCap`.
 - The **run score** is the sum of the 20 level scores; the maximum is 100 × Σ kinds = **10 800**.

@@ -26,15 +26,17 @@ import {
 } from './arcade';
 import { DentalToggle } from './components/DentalToggle';
 import { LookToggle } from './components/LookToggle';
-import { MOVE_MS, NutBoard } from './components/NutBoard';
+import { MOVE_MS } from './components/boardGeometry';
+import { NutBoard } from './components/NutBoard';
 import { useLook } from './hooks/useLook';
 import { useNutSortKeys } from './hooks/useNutSortKeys';
-import { LEVEL_COUNT } from './logic/constants';
+import { CAPACITY, LEVEL_COUNT } from './logic/constants';
+import { MAX_BOLTS, SELECT_KEYS } from './logic/keys';
 import { advanceGame, createInitialState, RUN_MAX_SCORE, runScore, type GameState } from './logic/game';
 import { LEVELS } from './logic/levels';
 import { isNutSortSession, type SavedGame } from './logic/persist';
 import { canMove } from './logic/rules';
-import { maxLevelScore, restartCap } from './logic/scoring';
+import { maxLevelScore, restartCap, UNDO_COST } from './logic/scoring';
 import { useRulesSections } from './rules';
 import { MESSAGES, type MessageKey } from './i18n';
 import styles from './App.module.css';
@@ -45,7 +47,6 @@ const SESSION_SCHEMA = 1;
 /** Lets the last nut land before the result card covers the board. */
 export const RESULT_DELAY_MS = 600;
 
-
 /**
  * UI phase layered on top of the engine's phase: `idle` before the first run
  * of a visit, `live` while a run is on (or just finished), `paused` while it is suspended.
@@ -55,7 +56,7 @@ type Phase = 'idle' | 'live' | 'paused';
 type Confirm = 'restart' | 'newGame' | null;
 
 const KEYS: [string, MessageKey][] = [
-  ['1–9 0', 'keySelect'],
+  [SELECT_KEYS, 'keySelect'],
   ['Esc', 'keyPutBack'],
   ['U Ctrl+Z', 'keyUndo'],
   ['R', 'keyRestart'],
@@ -267,7 +268,10 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
   const lastScore = state.levelScores[state.levelIndex] ?? 0;
   const num = (n: number) => formatNumber(n, lang);
   const restartsText = t(state.restarts === 1 ? 'restartsOne' : 'restartsMany', { n: state.restarts });
-  const keyRows = KEYS.map(([keys, action]): [string, string] => [keys, t(action)]);
+  const keyRows = KEYS.map(([keys, action]): [string, string] => [
+    keys,
+    t(action, { max: num(MAX_BOLTS), cost: num(UNDO_COST) }),
+  ]);
 
   let statusLabel: string | undefined;
   if (running && state.phase === 'playing') {
@@ -298,7 +302,7 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
   } else if (status === 'idle') {
     overlay = {
       title: gameName('nutsort', lang),
-      message: t('idleBody'),
+      message: t('idleBody', { cap: num(CAPACITY), count: num(LEVEL_COUNT) }),
       actions: [{ label: k('start'), onClick: start, primary: true, kbd: 'Space' }],
     };
   } else if (status === 'paused') {
@@ -406,6 +410,7 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
               <FinishButton score={score} visible={phase !== 'idle' && !finished} onFinish={finishEarly} onOpenChange={setFinishOpen} />
               <FullscreenButton immersive={immersive} />
             </div>
+            {phase !== 'idle' && !finished && <p className={styles.note}>{t('finishNote', { finish: k('finishButton') })}</p>}
             <p className={styles.note}>
               {t('levelNote', {
                 n: state.levelIndex + 1,
@@ -413,7 +418,7 @@ export function NutSortGame(props: ArcadeGameProps = {}) {
                 worth: num(Math.round(maxLevelScore(level.types) * restartCap(state.restarts))),
               })}
               {state.restarts > 0 ? t('levelNoteRestarts', { restarts: restartsText }) : ''}
-              {t('undoNote')}
+              {t('undoNote', { cost: num(UNDO_COST) })}
             </p>
             <div className={styles.save}>
               <SaveBadge savedAt={phase !== 'idle' ? savedAt : null} onDiscard={discardSave} />

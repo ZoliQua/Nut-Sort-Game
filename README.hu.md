@@ -128,16 +128,16 @@ A *k* fajtás szint az 1…*k* fajtákat használja. A szélesség, a bevágáso
 
 ### Telefonon
 
-Koppints arra a csavarra, amelyikről mozgatnál (a legfelső anyája felemelkedik), majd a célcsavarra. A felemelt csavarra újra koppintva visszateszed az anyát. Minden csavar legalább 44 px széles koppintási felület, a Visszavonás, az Újrakezdés, a Szünet, a Szabályok, a Befejezés és a Teljes képernyő pedig 44 px magas gomb a tábla alatt. A **Befejezés** idő előtt lezárja a menetet, és a már megoldott szinteket rangsorolja; a **Szabályok** megnyitja a szabályokat egy lépésábrával (szünetelteti a menetet). iPhone-on a *Megosztás → Főképernyőhöz adás* eltünteti a böngészősávokat.
+Koppints arra a csavarra, amelyikről mozgatnál (a legfelső anyája felemelkedik), majd a célcsavarra. A felemelt csavarra újra koppintva visszateszed az anyát. Minden csavar legalább 44 px széles koppintási felület, a Visszavonás, az Újrakezdés, a Szünet, a Szabályok, a Befejezés és a Teljes képernyő pedig 44 px magas gomb a tábla alatt. A **Befejezés** idő előtt lezárja a menetet, és csak a már megoldott szinteket rangsorolja (a folyamatban lévő szint nem számít; a gomb melletti megjegyzés ezt kimondja); a **Szabályok** megnyitja a szabályokat egy lépésábrával (szünetelteti a menetet). iPhone-on a *Megosztás → Főképernyőhöz adás* eltünteti a böngészősávokat.
 
 ### Billentyűzet
 
 | Billentyű | Művelet |
 | --- | --- |
 | 🖱️ Kattintás / koppintás egy csavarra | Felemeli a legfelső anyáját; egy másik csavarra kattintva oda teszed le, ugyanarra kattintva visszateszed |
-| **1** – **9**, **0** | Az 1–10. csavar kiválasztása |
+| **1** – **9**, **0** | Csavar kiválasztása (1–10: egy szint legtöbb csavarja; a **0** a 10. csavar) |
 | **Esc** | A felemelt anya visszatétele (szünetel, ha nincs felemelve semmi) |
-| **U** / **Ctrl+Z** / **Cmd+Z** | Az utolsó lépés visszavonása (+1 lépés) |
+| **U** / **Ctrl+Z** / **Cmd+Z** | Az utolsó lépés visszavonása (a lépésszámlálót `UNDO_COST` = 1-gyel növeli) |
 | **R** | A szint újrakezdése (előbb rákérdez – az **Enter** megerősít, az **Esc** marad) |
 | **Enter** / **Szóköz** | Indítás · folytatás · következő szint · új menet |
 | **P** | Szünet / folytatás |
@@ -156,7 +156,7 @@ restartCap  = max(0.2, 1 − 0.2 × újrakezdések) // 1. újrakezdés → 80 %,
 levelScore  = round(base × efficiency × restartCap)
 ```
 
-- A **Visszavonás** visszaveszi az utolsó lépést, de **+1**-gyel növeli a lépésszámlálót, így egy rossz, majd visszavont lépés 2 lépésbe kerül.
+- A **Visszavonás** visszaveszi az utolsó lépést, de **`UNDO_COST` = 1**-gyel növeli a lépésszámlálót, így egy rossz, majd visszavont lépés 2 lépésbe kerül.
   Korlátlan, és a szint elejéig (vagy az utolsó újrakezdésig) visszamegy.
 - Az **Újrakezdés** visszaállítja a kirakást és a lépésszámlálót, és csökkenti a `restartCap` értékét.
 - A **menet pontszáma** a 20 szint pontjainak összege; a maximum 100 × Σ fajták = **10 800**.

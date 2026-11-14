@@ -79,6 +79,16 @@ describe('Nut Sort finish early', () => {
     expect(finishBtn()).toBeTruthy();
   });
 
+  it('says that the level in progress does not count, only while a run is on', () => {
+    render(<NutSortGame />);
+    const note = 'A „Befejezés” gomb csak a már megoldott szinteket rangsorolja; a folyamatban lévő szint nem számít.';
+    expect(screen.queryByText(note)).toBeNull();
+    key(' ');
+    expect(screen.getByText(note)).toBeTruthy();
+    act(() => void applyLang('de'));
+    expect(screen.getByText('Beenden wertet nur die bereits gelösten Level; das laufende Level zählt nicht.')).toBeTruthy();
+  });
+
   it('stops the clock while the confirm is open', () => {
     render(<NutSortGame />);
     key(' ');

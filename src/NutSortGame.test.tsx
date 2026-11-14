@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadSession, readStats, saveSession } from './arcade';
-import { MOVE_MS } from './components/NutBoard';
+import { MOVE_MS } from './components/boardGeometry';
 import { LEVEL_COUNT } from './logic/constants';
 import { advanceGame, createInitialState, type GameAction, type GameState } from './logic/game';
 import { LEVELS } from './logic/levels';

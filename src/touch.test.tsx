@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { applyDental, applyLang } from './arcade';
-import { MOVE_MS, hitWidthPx } from './components/NutBoard';
+import { hitWidthPx, MOVE_MS } from './components/boardGeometry';
 import { LEVELS } from './logic/levels';
 import { NutSortGame } from './NutSortGame';
 import { setCoarsePointer } from './test/touchEnv';

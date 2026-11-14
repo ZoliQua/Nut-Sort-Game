@@ -128,16 +128,16 @@ Ein Level mit *k* Sorten nutzt die Sorten 1…*k*. Breite, Kerben und Regeln sin
 
 ### Auf dem Handy
 
-Tippe auf die Schraube, von der du etwas bewegen willst (ihre oberste Mutter hebt sich), dann auf die Zielschraube. Tippst du die angehobene Schraube erneut an, legst du die Mutter zurück. Jede Schraube ist eine Tippfläche von mindestens 44 px Breite, und Rückgängig, Neustart, Pause, Regeln, Beenden und Vollbild sind 44-px-Schaltflächen unter dem Spielbrett. **Beenden** beendet den Durchgang vorzeitig und wertet die bisher gelösten Level; **Regeln** öffnet die Regeln mit einem Zugdiagramm (das pausiert den Durchgang). Auf dem iPhone entfernt *Teilen → Zum Home-Bildschirm* die Browserleisten.
+Tippe auf die Schraube, von der du etwas bewegen willst (ihre oberste Mutter hebt sich), dann auf die Zielschraube. Tippst du die angehobene Schraube erneut an, legst du die Mutter zurück. Jede Schraube ist eine Tippfläche von mindestens 44 px Breite, und Rückgängig, Neustart, Pause, Regeln, Beenden und Vollbild sind 44-px-Schaltflächen unter dem Spielbrett. **Beenden** beendet den Durchgang vorzeitig und wertet nur die bereits gelösten Level (das laufende Level zählt nicht; ein Hinweis neben der Schaltfläche sagt das); **Regeln** öffnet die Regeln mit einem Zugdiagramm (das pausiert den Durchgang). Auf dem iPhone entfernt *Teilen → Zum Home-Bildschirm* die Browserleisten.
 
 ### Tastatur
 
 | Taste | Aktion |
 | --- | --- |
 | 🖱️ Schraube anklicken / antippen | Hebt ihre oberste Mutter an; klicke eine andere Schraube an, um sie dort abzulegen, oder dieselbe, um sie zurückzulegen |
-| **1** – **9**, **0** | Schraube 1–10 wählen |
+| **1** – **9**, **0** | Schraube wählen (1–10: die meisten Schrauben eines Levels; **0** ist Schraube 10) |
 | **Esc** | Angehobene Mutter zurücklegen (pausiert, wenn nichts angehoben ist) |
-| **U** / **Ctrl+Z** / **Cmd+Z** | Den letzten Zug rückgängig machen (+1 Zug) |
+| **U** / **Ctrl+Z** / **Cmd+Z** | Den letzten Zug rückgängig machen (erhöht den Zugzähler um `UNDO_COST` = 1) |
 | **R** | Level neu starten (fragt vorher – **Enter** bestätigt, **Esc** behält) |
 | **Enter** / **Leertaste** | Starten · fortsetzen · nächstes Level · nochmal spielen |
 | **P** | Pause / weiter |
@@ -156,7 +156,7 @@ restartCap  = max(0.2, 1 − 0.2 × Neustarts)    // 1. Neustart → 80 %, 2. �
 levelScore  = round(base × efficiency × restartCap)
 ```
 
-- **Rückgängig** macht den letzten Zug zurück, erhöht aber den Zugzähler um **+1**; ein falscher Zug, der zurückgenommen wird, kostet also 2 Züge.
+- **Rückgängig** macht den letzten Zug zurück, erhöht aber den Zugzähler um **`UNDO_COST` = 1**; ein falscher Zug, der zurückgenommen wird, kostet also 2 Züge.
   Es ist unbegrenzt und reicht bis zum Levelstart (oder zum letzten Neustart).
 - **Neustart** setzt Anordnung und Zugzähler zurück und senkt `restartCap`.
 - Der **Durchgangswert** ist die Summe der 20 Levelwerte; das Maximum ist 100 × Σ Sorten = **10 800**.

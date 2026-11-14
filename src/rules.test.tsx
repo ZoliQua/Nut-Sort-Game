@@ -65,7 +65,10 @@ describe('Nut Sort rules dialog', () => {
     render(<NutSortGame />);
     openRules();
     const text = dialog().textContent ?? '';
-    expect(text).toContain(`A cél: mind a ${hu(LEVEL_COUNT)} szint megoldása.`);
+    expect(text).toContain(
+      `Rendezd a csavaranyákat a csavarokra úgy, hogy minden csavaron ${hu(CAPACITY)} egyforma legyen, minél kevesebb lépésből. A cél: mind a ${hu(LEVEL_COUNT)} szint megoldása.`,
+    );
+    expect(text).toContain('Billentyűkkel a csavarokat így választod: 1–9, 0; U visszavon, R újrakezdi a szintet, P szüneteltet.');
     expect(text).toContain(`Egy csavar legfeljebb ${hu(CAPACITY)} anyát bír el, és minden fajtából pontosan ${hu(CAPACITY)} van.`);
   });
 

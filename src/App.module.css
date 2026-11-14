@@ -83,3 +83,20 @@
     min-height: 44px;
   }
 }
+
+/* Short landscape phones: board and panels sit side by side. */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 280px);
+    gap: 12px;
+  }
+
+  .buttons {
+    flex-wrap: wrap;
+  }
+
+  .buttons > * {
+    min-width: 0;
+    flex: 1 1 110px;
+  }
+}

@@ -11,6 +11,7 @@ import {
 import { Nut } from './components/Nut';
 import { CAPACITY, LEVEL_COUNT } from './logic/constants';
 import { RUN_MAX_SCORE } from './logic/game';
+import { SELECT_KEYS_TEXT } from './logic/keys';
 import { LEVELS } from './logic/levels';
 import { BASE_PER_TYPE, restartCap, RESTART_FLOOR, UNDO_COST } from './logic/scoring';
 import { MESSAGES, type MessageKey } from './i18n';
@@ -126,12 +127,12 @@ export function useRulesSections(): RulesSection[] {
       id: 'goal',
       body: (
         <>
-          <p>{m('rulesGoal', { count: num(LEVEL_COUNT) })}</p>
+          <p>{m('rulesGoal', { count: num(LEVEL_COUNT), cap: num(CAPACITY) })}</p>
           <MoveDiagram />
         </>
       ),
     },
-    { id: 'play', body: <p>{touch ? m('rulesPlayTouch') : m('rulesPlayKeys')}</p> },
+    { id: 'play', body: <p>{touch ? m('rulesPlayTouch') : m('rulesPlayKeys', { keys: SELECT_KEYS_TEXT })}</p> },
     {
       id: 'rules',
       body: (

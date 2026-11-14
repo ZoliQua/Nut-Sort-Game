@@ -78,3 +78,10 @@
     animation: none;
   }
 }
+
+/* Short landscape phones: the whole board stays on screen (it scales to fit). */
+@media (orientation: landscape) and (max-height: 500px) {
+  .board {
+    max-height: calc(100dvh - 140px);
+  }
+}

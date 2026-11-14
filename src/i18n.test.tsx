@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { applyLang, LANGS, saveSession } from './arcade';
 import { NutBoard } from './components/NutBoard';
-import { MOVE_MS } from './components/NutBoard';
+import { MOVE_MS } from './components/boardGeometry';
 import { MESSAGES } from './i18n';
 import { advanceGame, createInitialState, runScore, type GameAction, type GameState } from './logic/game';
 import { LEVELS } from './logic/levels';

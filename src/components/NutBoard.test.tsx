@@ -3,7 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { NUT_TYPES } from '../logic/constants';
 import { LEVELS } from '../logic/levels';
 import type { Layout } from '../logic/types';
-import { MIN_NOTCH_PX, NutBoard } from './NutBoard';
+import { MIN_NOTCH_PX } from './boardGeometry';
+import { NutBoard } from './NutBoard';
 
 const LAYOUT: Layout = [[0, 1, 1], [1, 0], [], [1, 0, 0, 1]];
 
