@@ -1,9 +1,11 @@
 # 🔩 Nut Sort
 
+**English** · [Deutsch](README.de.md) · [Magyar](README.hu.md)
+
 A type-safe Nut Sort puzzle built with **React 18**, **Vite** and **TypeScript** — sort coloured nuts onto bolts in as few moves
 as you can. Every nut kind is told apart by its **width and the notches on its top edge**, so the game is fully playable
 without colour. **20 fixed levels**, the same for every player, each with a **proven minimum (par)** found by an exact A\* solver.
-Runs on its own **and** as one of the fourteen games of **[Zoltan's Arcade](https://github.com/ZoliQua/Arcade-Game-Center)** —
+Runs on its own **and** as one of the fifteen games of **[Zoltan's Arcade](https://github.com/ZoliQua/Arcade-Game-Center)** —
 play it at [dulzoltan.hu/arcade/#/play/nutsort](https://dulzoltan.hu/arcade/#/play/nutsort).
 
 [![CI](https://github.com/ZoliQua/Nut-Sort-Game/actions/workflows/ci.yml/badge.svg)](https://github.com/ZoliQua/Nut-Sort-Game/actions/workflows/ci.yml)
@@ -53,6 +55,7 @@ Every game is a standalone repo that also plugs into the portal. They share one 
 | 💣 Minesweeper | [Minesweeper-Game](https://github.com/ZoliQua/Minesweeper-Game) | Logic |
 | ♠️ Solitaire | [Solitaire-Game](https://github.com/ZoliQua/Solitaire-Game) | Cards |
 | 🎴 Ulti | [Ulti-Game](https://github.com/ZoliQua/Ulti-Game) | Cards |
+| 🂡 Snapszer | [Snapszer-Game](https://github.com/ZoliQua/Snapszer-Game) | Cards |
 
 ## ✨ Features
 
@@ -69,6 +72,9 @@ Every game is a standalone repo that also plugs into the portal. They share one 
 - 🌍 **Three languages** — English, Hungarian and German; switch in the top bar or in the settings (also `?lang=en|hu|de` for link hand-off); numbers follow the locale's grouping
 - 🦷 **Dental mode** — a „Fogas mód” / "Dental mode" / „Zahnmodus” toggle in the settings, off by default (or `?dental=1`), shared across the whole arcade: the bolts are implant posts and the nuts are crowns; the width and notch coding is unchanged; presentation only
 - 🤖 **Attract-mode demo** (`<NutSortDemo />`) — replays the optimal solutions of levels 1–5
+- 📖 **Rules dialog** with a diagram of legal and illegal moves (opening it pauses the run)
+- 🏁 **Finish early** — end the run on purpose; the points of the levels solved so far go on the leaderboard
+- 🖥️ **Full-screen** button (CSS full-screen mode on iPhone)
 - 📱 **Phone-friendly** — 7–10 bolts split into two rows, so a 360 px screen has no horizontal scroll and the notches stay visible
 - ⌨️ **Keyboard-first and accessible** — every bolt is a focusable button labelled with its contents
   (`Bolt 3: 2 nuts, top type 6 (yellow, 3 notches)`)
@@ -120,6 +126,12 @@ A level with *k* kinds uses kinds 1…*k*. Width, notches and rules are identica
 
 ## ⌨️ Controls
 
+### On a phone
+
+Tap the bolt you want to move from (its top nut lifts), then tap the bolt you want to move to. Tap the lifted bolt again to put the nut back. Every bolt is a tap area at least 44 px wide, and Undo, Restart, Pause, Rules, Finish and Full screen are 44 px buttons below the board. **Finish** ends the run early and ranks the levels solved so far; **Rules** opens the rules with a move diagram (it pauses the run). On an iPhone, *Share → Add to Home Screen* removes the browser bars.
+
+### Keyboard
+
 | Key | Action |
 | --- | --- |
 | 🖱️ Click / tap a bolt | Lift its top nut; click another bolt to drop it there, or the same bolt to put it back |
@@ -149,7 +161,7 @@ levelScore  = round(base × efficiency × restartCap)
   It is unlimited and works back to the level's start (or the last restart).
 - **Restart** resets the layout and the move counter and lowers `restartCap`.
 - The **run score** is the sum of the 20 level scores; the maximum is 100 × Σ kinds = **10 800**.
-- After level 20 the run is recorded once with outcome `win`. A run abandoned through **New game** is **not** recorded.
+- After level 20 the run is recorded once with outcome `win`. **Finish** ends the run early: the score shown at that moment (the levels solved so far) is ranked once, with outcome `finished`. A run abandoned through **New game** is **not** recorded.
 
 The stat strip shows **Level** *n*/20, **Moves** *moves / par*, the run **Score** and the active **Time** (time is shown, not scored;
 the clock stops on the level-complete card). Every finished run is recorded by the kit under `arcade.stats.nutsort`
@@ -197,7 +209,7 @@ import { NutSortGame, NutSortDemo } from '@arcade/nutsort';
 
 <NutSortGame
   embedded                                   // hide the page title; the portal shows it
-  onGameOver={(score) => submitScore('nutsort', score)}    // finished runs with points > 0
+  onGameOver={(score, info) => submitScore('nutsort', score, info?.finished)}  // runs with points > 0, and every run finished early
   onRunEnd={(run) => console.log(run.outcome, run.score)}  // every finished run
   onStatusChange={({ status, score, seconds }) => updateHeader(status, seconds)}
 />
@@ -206,7 +218,7 @@ import { NutSortGame, NutSortDemo } from '@arcade/nutsort';
 
 Both components follow the shared `ArcadeGameProps` / `ArcadeDemoProps` contract from `src/arcade/types.ts`.
 Status mapping: `idle` before the first run of a visit (Start overlay), `running` while a run is played (including the
-level-complete card), `paused` while suspended (or restored), `gameOver` once level 20 is solved.
+level-complete card), `paused` while suspended (or restored), `gameOver` once level 20 is solved or the run is finished early.
 
 ## 🧪 Scripts
 
@@ -237,6 +249,7 @@ src/
     persist.ts            strict runtime validation of saved sessions (replays the history)
   hooks/                  useLook, useNutSortKeys
   components/             NutBoard (SVG), Nut, LookToggle
+  rules.tsx               rules dialog sections and the move diagram
   demo/NutSortDemo.tsx    landing-page attract mode
   NutSortGame.tsx         the embeddable game (ArcadeGameProps)
   App.tsx                 standalone page: <ArcadeShell><NutSortGame/></ArcadeShell>

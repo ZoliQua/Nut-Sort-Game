@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-11-14
+
+### Added
+
+- Rules dialog with a diagram of legal and illegal moves (opening it pauses the run).
+- Finish early: ends the run on purpose and ranks the points of the levels solved so far ("Finished early" on the game-over card).
+- Touch controls: tap the source bolt, then the target bolt; 44 px tap areas and buttons; the layout fits 360 px portrait phones.
+- Full-screen button (CSS full-screen mode on iPhone); `viewport-fit=cover` for the notch.
+- README in English, German and Hungarian; the family table lists all fifteen games, including Snapszer.
+
 ## [1.1.1] — 2026-11-14
 
 ### Changed
