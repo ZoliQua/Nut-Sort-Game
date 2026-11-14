@@ -35,6 +35,13 @@
   flex: 1;
 }
 
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .save {
   margin-top: 10px;
   min-height: 16px;
@@ -66,5 +73,13 @@
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Touch: every play button is a comfortable 44 px target. */
+@media (pointer: coarse) {
+  .buttons > *,
+  .settings :global(.arc-segmented) button {
+    min-height: 44px;
   }
 }

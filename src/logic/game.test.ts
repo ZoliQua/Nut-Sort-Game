@@ -159,4 +159,17 @@ describe('advanceGame — levels and run', () => {
     expect(advanceGame(s, { type: 'next' })).toBe(s);
     expect(advanceGame(s, { type: 'newRun' })).toEqual(createInitialState(0));
   });
+
+  it('finishEarly ends the run keeping the levels solved so far, and is idempotent', () => {
+    let s = play(createInitialState(0), LEVELS[0].solution);
+    s = run(s, { type: 'next' });
+    const done = advanceGame({ ...s, lifted: 0 }, { type: 'finishEarly' });
+    expect(done.phase).toBe('finished');
+    expect(done.finishedEarly).toBe(true);
+    expect(done.lifted).toBeNull();
+    expect(runScore(done)).toBe(200);
+    expect(advanceGame(done, { type: 'finishEarly' })).toBe(done);
+    expect(advanceGame(done, { type: 'select', bolt: 0 })).toBe(done);
+    expect(runScore(advanceGame(createInitialState(0), { type: 'finishEarly' }))).toBe(0);
+  });
 });

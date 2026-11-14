@@ -47,6 +47,11 @@ function boardGeometry(bolts: number): BoardGeometry {
   return { rows, perRow, width: 2 * PAD + perRow * COL_W, height: 2 * PAD + rows * ROW_H };
 }
 
+/** On-screen width in CSS px of one bolt's tap area when the board is `boardPx` wide (a touch target needs ≥ 44). */
+export function hitWidthPx(bolts: number, boardPx: number): number {
+  return ((COL_W - 6) * boardPx) / boardGeometry(bolts).width;
+}
+
 function boltOrigin(b: number, bolts: number, g: BoardGeometry): { cx: number; top: number } {
   const row = Math.floor(b / g.perRow);
   const inRow = row === 0 ? Math.min(g.perRow, bolts) : bolts - g.perRow;

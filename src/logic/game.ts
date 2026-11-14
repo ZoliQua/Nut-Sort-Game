@@ -1,7 +1,7 @@
 import { LEVEL_COUNT } from './constants';
 import { LEVELS } from './levels';
 import { applyMove, canMove, isSolved } from './rules';
-import { levelScore, UNDO_COST } from './scoring';
+import { levelScore, maxLevelScore, UNDO_COST } from './scoring';
 import type { Layout, Move } from './types';
 
 export type Phase = 'playing' | 'levelComplete' | 'finished';
@@ -22,6 +22,8 @@ export type GameState = {
   /** One score per completed level. */
   levelScores: number[];
   phase: Phase;
+  /** The player ended the run with the Finish button; the score is the levels solved so far. */
+  finishedEarly?: boolean;
 };
 
 export type GameAction =
@@ -30,7 +32,8 @@ export type GameAction =
   | { type: 'undo' }
   | { type: 'restart' }
   | { type: 'next' }
-  | { type: 'newRun' };
+  | { type: 'newRun' }
+  | { type: 'finishEarly' };
 
 function levelStart(levelIndex: number, levelScores: number[], restarts = 0): GameState {
   return {
@@ -97,6 +100,8 @@ export function advanceGame(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'newRun':
       return createInitialState(0);
+    case 'finishEarly':
+      return state.phase === 'finished' ? state : { ...state, lifted: null, shake: null, phase: 'finished', finishedEarly: true };
     case 'next':
       return state.phase === 'levelComplete' ? levelStart(state.levelIndex + 1, state.levelScores) : state;
     default:
@@ -130,3 +135,6 @@ export function advanceGame(state: GameState, action: GameAction): GameState {
 export function runScore(state: GameState): number {
   return state.levelScores.reduce((sum, s) => sum + s, 0);
 }
+
+/** The highest possible run score (100 × Σ types over all levels). */
+export const RUN_MAX_SCORE = LEVELS.reduce((sum, l) => sum + maxLevelScore(l.types), 0);
